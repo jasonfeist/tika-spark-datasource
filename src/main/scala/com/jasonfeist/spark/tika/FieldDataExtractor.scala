@@ -10,6 +10,7 @@ import org.apache.tika.language.LanguageIdentifier
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.sax.BodyContentHandler
 
+import scala.collection.mutable
 
 class FieldDataExtractor extends Serializable {
 
@@ -19,7 +20,8 @@ class FieldDataExtractor extends Serializable {
                    castType: DataType,
                    bodyContentHandler: BodyContentHandler,
                    fileName: String,
-                   metadata: Metadata
+                   metadata: Metadata,
+                   lowerCaseToCaseSensitive: mutable.Map[String, String]
                   ): Object = {
       if ("language" == field.toLowerCase) {
         val languageObj = new LanguageIdentifier(bodyContentHandler.toString())
@@ -32,35 +34,36 @@ class FieldDataExtractor extends Serializable {
       } else if ("text" == field.toLowerCase) {
         bodyContentHandler.toString()
       } else {
-        castType match {
-          case _: IntegerType =>
-            val v = metadata.get(field)
-            if (v == null) {
-              return null
-            }
-            Integer.parseInt(v).asInstanceOf[Object]
+          val caseInsensitiveField = lowerCaseToCaseSensitive.get(field.toLowerCase).getOrElse(return null)
+          castType match {
+            case _: IntegerType =>
+              val v = metadata.get(caseInsensitiveField)
+              if (v == null) {
+                return null
+              }
+              Integer.parseInt(v).asInstanceOf[Object]
 
-          case _: StringType =>
-            metadata.get(field)
+            case _: StringType =>
+              metadata.get(caseInsensitiveField)
 
-          case _: DateType =>
-            val sdf = new SimpleDateFormat(dateFormat)
-            val v = metadata.get(field)
-            if (v == null) {
-              return null
-            }
-            new Date(sdf.parse(v).getTime)
+            case _: DateType =>
+              val sdf = new SimpleDateFormat(dateFormat)
+              val v = metadata.get(caseInsensitiveField)
+              if (v == null) {
+                return null
+              }
+              new Date(sdf.parse(v).getTime)
 
-          case _: TimestampType =>
-            val sdf = new SimpleDateFormat(dateFormat)
-            val v = metadata.get(field)
-            if (v == null) {
-              return null
-            }
-            new Timestamp(sdf.parse(v).getTime)
+            case _: TimestampType =>
+              val sdf = new SimpleDateFormat(dateFormat)
+              val v = metadata.get(caseInsensitiveField)
+              if (v == null) {
+                return null
+              }
+              new Timestamp(sdf.parse(v).getTime)
 
-          case _ => throw new RuntimeException(s"Type not supported: ${castType.typeName}")
-        }
+            case _ => throw new RuntimeException(s"Type not supported: ${castType.typeName}")
+          }
       }
   }
 

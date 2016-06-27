@@ -36,7 +36,8 @@ class TikaMetadataRelation protected[tika] (path: String,
     while (index < schema.fields.length) {
       val field = schema(index)
       val fieldData = fieldDataExtractor.matchedField(field.name,
-        field.dataType, extractedData._1, file._1, extractedData._2)
+        field.dataType, extractedData._1, file._1, extractedData._2,
+        extractedData._3)
       rowArray(index) = fieldData
       index = index + 1
     }

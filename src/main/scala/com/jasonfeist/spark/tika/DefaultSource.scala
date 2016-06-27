@@ -20,15 +20,15 @@ class DefaultSource
     override def createRelation(sqlContext: SQLContext, parameters: Map[String, String]): BaseRelation = {
       val struct =
         StructType(
-              StructField("DetectedType", StringType, true) ::
-              StructField("Language", StringType, true) ::
-              StructField("FileName", StringType, true) ::
-              StructField("Author", StringType, true)  ::
-              StructField("Text", StringType, true)  ::
-              StructField("Creation-Date", TimestampType, true) ::
-              StructField("Title", StringType, true) ::
-              StructField("Content-Length", IntegerType, true) ::
-              StructField("Last-Modified", DateType, true) :: Nil
+              StructField("detectedtype", StringType, true) ::
+              StructField("language", StringType, true) ::
+              StructField("filename", StringType, true) ::
+              StructField("author", StringType, true)  ::
+              StructField("text", StringType, true)  ::
+              StructField("creation-date", TimestampType, true) ::
+              StructField("title", StringType, true) ::
+              StructField("content-length", IntegerType, true) ::
+              StructField("last-modified", DateType, true) :: Nil
         )
       createRelation(sqlContext, parameters, struct)
     }
