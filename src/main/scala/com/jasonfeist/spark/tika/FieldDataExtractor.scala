@@ -14,7 +14,9 @@ import scala.collection.mutable
 
 class FieldDataExtractor extends Serializable {
 
-  val dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+  object DateFormat {
+    val dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+  }
 
   def matchedField(field: String,
                    castType: DataType,
@@ -47,7 +49,7 @@ class FieldDataExtractor extends Serializable {
               metadata.get(caseInsensitiveField)
 
             case _: DateType =>
-              val sdf = new SimpleDateFormat(dateFormat)
+              val sdf = new SimpleDateFormat(DateFormat.dateFormat)
               val v = metadata.get(caseInsensitiveField)
               if (v == null) {
                 return null
@@ -55,7 +57,7 @@ class FieldDataExtractor extends Serializable {
               new Date(sdf.parse(v).getTime)
 
             case _: TimestampType =>
-              val sdf = new SimpleDateFormat(dateFormat)
+              val sdf = new SimpleDateFormat(DateFormat.dateFormat)
               val v = metadata.get(caseInsensitiveField)
               if (v == null) {
                 return null
